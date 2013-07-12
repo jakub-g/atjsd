@@ -1,8 +1,41 @@
+var splitAriaTemplatesMultipart = function(responseText){
+    var out = [];
+
+    var _multiPartHeader = /^(\/\*[\s\S]*?\*\/\s*\r?\n)?\/\/\*\*\*MULTI-PART(\r?\n[^\n]+\n)/;
+    var _logicalPathHeader = /^\/\/LOGICAL-PATH:([^\s]+)$/;
+    var multipart = _multiPartHeader.exec(responseText);
+
+    if (multipart != null) {
+        var separator = multipart[2];
+        var parts = responseText.split(separator);
+
+        out.push("//***MULTI-PART");
+        // 0-th is the copyright banner
+        for (var i = 1, partsLength = parts.length; i < partsLength; i += 2) {
+            out.push(separator);
+            out.push(parts[i]); // logical path line
+            out.push(separator);
+            if(parts[i].match(/\.js$/)){
+                out.push(js_beautify(parts[i+1]), null); // content
+            }else{
+                out.push(parts[i+1]); // content
+            }
+            out.push("\n");
+        }
+    }
+    return out.join('');
+}
+
 onmessage = function(event) {
   var old_js = event.data.join("");
   var new_js = old_js;
+  var banner = "// Deminified with ATJSD\n";
   try {
-    new_js = js_beautify(old_js, null);
+    if(!old_js.match(/\*\*\*MULTI\-PART/)){
+        new_js = banner + js_beautify(old_js, null);
+    }else{
+        new_js = banner + splitAriaTemplatesMultipart(old_js);
+    }
   } catch (e) {
     // we don't have Components.utils.reportError here :(
   }
