@@ -34,7 +34,7 @@ onmessage = function(event) {
     if(!old_js.match(/\*\*\*MULTI\-PART/)){
         new_js = banner + js_beautify(old_js, null);
     }else{
-        new_js = banner + splitAriaTemplatesMultipart(old_js);
+        new_js = splitAriaTemplatesMultipart(old_js);
     }
   } catch (e) {
     // we don't have Components.utils.reportError here :(
