@@ -1,3 +1,5 @@
+var banner = "/* Deminified with ATJSD */\n";
+
 var splitAriaTemplatesMultipart = function(responseText){
     var out = [];
 
@@ -16,7 +18,7 @@ var splitAriaTemplatesMultipart = function(responseText){
             out.push(parts[i]); // logical path line
             out.push(separator);
             if(parts[i].match(/\.js$/)){
-                out.push(js_beautify(parts[i+1]), null); // content
+                out.push(banner + js_beautify(parts[i+1]), null); // content
             }else{
                 out.push(parts[i+1]); // content
             }
@@ -29,7 +31,6 @@ var splitAriaTemplatesMultipart = function(responseText){
 onmessage = function(event) {
   var old_js = event.data.join("");
   var new_js = old_js;
-  var banner = "// Deminified with ATJSD\n";
   try {
     if(!old_js.match(/\*\*\*MULTI\-PART/)){
         new_js = banner + js_beautify(old_js, null);
