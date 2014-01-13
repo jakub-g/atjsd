@@ -17,7 +17,8 @@ var splitAriaTemplatesMultipart = function(responseText){
             out.push(separator);
             out.push(parts[i]); // logical path line
             out.push(separator);
-            if(parts[i].match(/\.js$/)){
+            // if JS file, or a precompiled template (i.e. starting from Aria.classDefinition), then deminify
+            if(parts[i].match(/\.js$/) || parts[i+1].indexOf("Aria.classDefinition") === 0){
                 out.push(banner + js_beautify(parts[i+1]), null); // content
             }else{
                 out.push(parts[i+1]); // content
